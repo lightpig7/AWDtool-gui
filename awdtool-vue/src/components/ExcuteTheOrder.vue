@@ -3,17 +3,28 @@
 import {chage_passwd} from "@/tool.js";
 import {ref} from "vue";
 
-const username =ref('');
-const password =ref('');
-const host =ref('');
-const port =ref('');
-const new_password =ref('');
-let dataout= ref('');
+const username = ref('');
+const password = ref('');
+const host = ref('');
+const port = ref('');
+const new_password = ref('');
+const thread = ref('');
+let dataout = ref('');
 
+const regex = /\.[0-9]{1,3}\/\d{1,2}$/;
 const confirm = async () => {
-  dataout = await chage_passwd(host.value, port.value, username.value, password.value, new_password.value)
-  console.log(dataout)
+  if (regex.test(host.value)) {
+    let host_val = host.value.replace(regex,'');
+    for(let i =1;i <= 255;i++ ){
+      console.log(host_val+'.'+i);
+    }
+  } else {
+    dataout.value = await chage_passwd(host.value, port.value, username.value, password.value, new_password.value)
+    console.log(dataout.value)
+  }
 }
+
+
 </script>
 
 <template>
@@ -23,24 +34,28 @@ const confirm = async () => {
       <div>
         <div class="item-mini">
           <div>
-            <label>用户名</label>
+            <label>IP地址 : </label>
+            <input v-model="host" placeholder="192.168.52.143">
+          </div>
+          <div>
+            <label>端口 : </label>
+            <input v-model="port" style="width: 50px" placeholder="默认22">
+          </div>
+          <div>
+            <label>用户名 : </label>
             <input v-model="username" placeholder="默认为ubuntu">
           </div>
           <div>
-            <label>密码</label>
+            <label>密码 : </label>
             <input v-model="password" placeholder="默认123456">
           </div>
           <div>
-            <label>IP地址</label>
-            <input v-model="host" placeholder="默认192.168.52.143">
-          </div>
-          <div>
-            <label>端口</label>
-            <input v-model="port" placeholder="默认22">
-          </div>
-          <div>
-            <label>新密码</label>
+            <label>新密码 : </label>
             <input v-model="new_password" placeholder="默认peiqi7@987">
+          </div>
+          <div>
+            <label>线程 : </label>
+            <input v-model="thread" placeholder="默认为5">
           </div>
         </div>
         <hr>
@@ -49,7 +64,8 @@ const confirm = async () => {
         </div>
       </div>
       <label>日志信息 : </label>
-      <span>{{dataout}}</span>
+      <br>
+      <span>{{ dataout }}</span>
     </div>
   </div>
 </template>
