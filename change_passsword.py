@@ -12,6 +12,7 @@ def ssh_changepasswd(host, port, username, password,new_password):
     final_string=''
     try:
         ssh.connect(hostname=host, port=port, username=username, password=password, timeout=5)
+
         command = f"echo -e '{password}\n{new_password}\n{new_password}' | passwd {username}"
         stdin, stdout, stderr = ssh.exec_command(command)
         out, err = stdout.read(), stderr.read()
@@ -21,12 +22,14 @@ def ssh_changepasswd(host, port, username, password,new_password):
         else:
             final_string = host + " Failed to change password!!!"
         for line in stdout:
-            print(line.strip())
+            final_string += line
+        final_string+=str(err)
+        return final_string
     except paramiko.AuthenticationException:
-        print("Authentication failed, please check your credentials.")
+        return "Authentication failed, please check your credentials."
     except paramiko.SSHException as e:
-        print("SSH connection failed:", str(e))
+        return "SSH connection failed:", str(e)
     finally:
         ssh.close()
 
-ssh_changepasswd('192.168.52.143',22,'ubuntu','peiqi7@987','peiqi7@987')
+# print(ssh_changepasswd('192.168.52.143',22,'ubuntu','peiqi7@987','peiqi7@987'))

@@ -1,15 +1,36 @@
-import webview
-from app import  app
+import os
 
+import webview
+from flask import Flask, render_template, jsonify, request
+
+from change_passsword import ssh_changepasswd
+
+app = Flask(__name__, template_folder='static', static_folder='static/assets')  # 创建一个应用
+@app.route('/')
+def index():  # 定义根目录处理器
+    print(os.path.dirname(os.path.abspath(__file__)))
+    return render_template('index.html')  # 模板文件路径是相对于 'templates' 文件夹的
 
 class Api():
-    def chage_passwd(self, value):
-        print(value)
+    def chage_passwd(self, host, port, username, password,new_password):
+        if host=='':
+            host = '192.168.52.143'
+        if port=='':
+            port = 22
+        if username=='':
+            username='ubuntu'
+        if password =='':
+            password='123456'
+        if new_password =='':
+            new_password='peiqi7@987'
+        s=ssh_changepasswd(host, port, username, password,new_password)
+        print(s)
+        return s
 
 
 
 if __name__ == '__main__':
-    window = webview.create_window('演示系统', app, height=530, width=800, resizable=False, min_size=(800, 500),
+    window = webview.create_window('AWDtool-gui', app, height=530, width=800, resizable=False, min_size=(800, 500),
                                    js_api=Api())
 
-    webview.start()
+    webview.start(debug=True)
