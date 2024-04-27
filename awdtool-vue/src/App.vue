@@ -1,6 +1,7 @@
 <script setup>
 
 import ExcuteTheOrder from "@/components/ExcuteTheOrder.vue";
+import Dataout_window from "@/components/dataout_window.vue";
 </script>
 
 <template>
@@ -12,7 +13,7 @@ import ExcuteTheOrder from "@/components/ExcuteTheOrder.vue";
   </header>
 
   <main>
-
+  <dataout_window/>
   </main>
 </template>
 
