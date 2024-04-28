@@ -1,0 +1,1 @@
+(function(){"use strict";const c=async function(t,s,a,e,n){return console.log(t,s,a,e,n),await pywebview.api.chage_passwd(t,s,a,e,n)};self.onmessage=async function(t){const{host:s,port:a,username:e,password:n,new_password:o}=t.data;let i=await c(s,a,e,n,o);console.log(s,a,e,n,o),self.postMessage(i)}})();

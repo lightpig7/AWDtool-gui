@@ -86,33 +86,29 @@ const confirm_ssh = async () => {
 
 <template>
   <div>
-    <h3>修改ssh密码</h3>
+    <h3>Get-flag</h3>
     <div class="display">
       <div>
         <div class="item-mini">
           <div>
-            <label>IP地址 : </label>
+            <label>Url : </label>
             <input v-model="host" style="width: 220px" placeholder="192.168.52.143或192.168.52.0/24">
           </div>
           <div>
-            <label>端口 : </label>
+            <label>方法 : </label>
             <input v-model="port" style="width: 50px" placeholder="22">
           </div>
           <div>
-            <label>用户名 : </label>
-            <input v-model="username" placeholder="ubuntu">
-          </div>
-          <div>
-            <label>密码 : </label>
-            <input v-model="password" placeholder="123456">
-          </div>
-          <div>
-            <label>新密码 : </label>
-            <input v-model="new_password" placeholder="peiqi7@987">
+            <label>参数 : </label>
+            <input v-model="thread" style="width: 50px" placeholder="5">
           </div>
           <div>
             <label>线程 : </label>
             <input v-model="thread" style="width: 50px" placeholder="5">
+          </div>
+          <div>
+            <label>HTTP Header : </label>
+            <input v-model="thread"  placeholder="5">
           </div>
         </div>
         <hr>

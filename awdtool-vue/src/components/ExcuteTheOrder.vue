@@ -15,13 +15,19 @@ let dataout = ref('');
 const regex = /\.[0-9]{1,3}\/\d{1,2}$/;
 
 
-const confirm = async () => {
+const confirm = async (mode) => {
   if (regex.test(host.value)) {
+    if(mode === '0') {
     emitter.emit('dataout', '扫描中...');
-    dataout.value = await change_morepasswd(host.value, port.value, username.value, password.value, new_password.value,thread.value);
+    dataout.value = await change_morepasswd(host.value, port.value, username.value, password.value, new_password.value,thread.value,mode);
     emitter.emit('dataout', dataout.value);
+    }else {
+      emitter.emit('dataout', '关闭中...');
+      dataout.value = await change_morepasswd(host.value, port.value, username.value, password.value, new_password.value,thread.value,mode);
+      emitter.emit('dataout', dataout.value);
+    }
   } else {
-    dataout.value = await chage_passwd(host.value, port.value, username.value, password.value, new_password.value);
+    dataout.value = await chage_passwd(host.value, port.value, username.value, password.value, new_password.value,);
     emitter.emit('dataout', dataout.value);
   }
 }
@@ -59,8 +65,13 @@ const confirm = async () => {
           </div>
         </div>
         <hr>
+        <div class="item-mini">
         <div style="text-align: center">
-          <button @click="confirm('1')">确认</button>
+          <button @click="confirm('0')">确认</button>
+        </div>
+          <div style="text-align: center;margin-left: -100px">
+            <button @click="confirm('1')">取消</button>
+          </div>
         </div>
       </div>
 

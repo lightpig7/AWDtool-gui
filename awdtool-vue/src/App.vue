@@ -2,17 +2,19 @@
 
 import ExcuteTheOrder from "@/components/ExcuteTheOrder.vue";
 import Dataout_window from "@/components/dataout_window.vue";
+import GetFlag from "@/components/getFlag.vue";
 </script>
 
 <template>
   <header>
 
-    <div class="wrapper">
+
       <excute-the-order msg="You did it!" />
-    </div>
+      <get-flag />
   </header>
 
   <main>
+
   <dataout_window/>
   </main>
 </template>

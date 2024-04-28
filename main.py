@@ -4,7 +4,7 @@ import re
 import webview
 from flask import Flask, render_template, jsonify, request
 
-from change_passsword import ssh_changepasswd, ssh_changemorepasswd
+from change_passsword import *
 
 app = Flask(__name__, template_folder='static', static_folder='static/assets')  # 创建一个应用
 
@@ -29,7 +29,10 @@ class Api():
         s = ssh_changepasswd(host, port, username, password, new_password)
         print(s)
         return s
-    def change_morepasswd(self, host, port, username, password, new_password,thread):
+    def change_morepasswd(self, host, port, username, password, new_password,thread,mode):
+        if mode == '1':
+            kill_pool()
+            return ''
         if host == '':
             host = '192.168.52.143'
         if port == '':
@@ -46,7 +49,7 @@ class Api():
 
 
 if __name__ == '__main__':
-    window = webview.create_window('AWDtool-gui', app, height=530, width=800, resizable=False, min_size=(800, 500),
+    window = webview.create_window('AWDtool-gui', app, height=700, width=1000, resizable=False, min_size=(1000, 700),
                                    js_api=Api())
     # result = window.evaluate_js('import emitter from "@/eventBus.js";emitter.emit("dataout", "123");')
-    webview.start(debug=True)
+    webview.start()

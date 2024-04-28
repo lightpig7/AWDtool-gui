@@ -4,7 +4,9 @@ import emitter from "@/eventBus.js";
 
 const dataout=ref('');
 emitter.on('dataout',data=>{
-  dataout.value+=data+'\n';
+  if(dataout !== '') {
+    dataout.value += data + '\n';
+  }
 })
 </script>
 
