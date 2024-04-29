@@ -15,7 +15,7 @@ let dataout = ref('');
 const regex = /\.[0-9]{1,3}\/\d{1,2}$/;
 
 
-const confirm = async (mode) => {
+const confirm_ssh = async (mode) => {
   if (regex.test(host.value)) {
     if(mode === '0') {
     emitter.emit('dataout', '扫描中...');
@@ -61,16 +61,16 @@ const confirm = async (mode) => {
           </div>
           <div>
             <label>线程 : </label>
-            <input v-model="thread" style="width: 50px" placeholder="5">
+            <input v-model="thread" style="width: 50px" placeholder="20">
           </div>
         </div>
         <hr>
         <div class="item-mini">
         <div style="text-align: center">
-          <button @click="confirm('0')">确认</button>
+          <button @click="confirm_ssh('0')">确认</button>
         </div>
           <div style="text-align: center;margin-left: -100px">
-            <button @click="confirm('1')">取消</button>
+            <button @click="confirm_ssh('1')">取消</button>
           </div>
         </div>
       </div>

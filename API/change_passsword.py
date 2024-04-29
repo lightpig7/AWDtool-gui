@@ -6,10 +6,6 @@ from socket import socket
 import paramiko
 
 
-def ssh_command(host, port, username, password, command):
-    pass
-
-
 def ssh_changepasswd(host, port, username, password, new_password):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -41,8 +37,10 @@ def ssh_changepasswd(host, port, username, password, new_password):
 
 mode = 0
 flag = 1
+
+
 def ssh_changemorepasswd(host, port, username, password, new_password, thread):
-    global mode,flag
+    global mode, flag
     if flag == 0:
         kill_pool()
     else:
@@ -56,36 +54,8 @@ def ssh_changemorepasswd(host, port, username, password, new_password, thread):
         host_val = regex.sub('', host)
         futures = []
         for i in range(1, 256):
-
             future = pool.submit(ssh_changepasswd, host_val + '.' + str(i), port, username, password, new_password)
             futures.append(future)
-
-        for future in as_completed(futures):
-            if mode == 0:
-                try:
-                    result = future.result()  # 获取任务结果
-                    final_string += result
-                    print(result)
-                except Exception as e:
-                    final_string += f"An error occurred: {e}"
-                    print(f"An error occurred: {e}")
-            else:
-                mode = 0
-                flag=1
-                final_string+='关闭成功'
-                return final_string
-
-    if '/16' in host:
-        regex = re.compile(r'\.[0-9]{1,3}\.[0-9]{1,3}/\d{1,2}')
-        host_val = regex.sub('', host)
-        futures = []
-        for i in range(1, 256):
-            for j in range(1, 256):
-                future = pool.submit(ssh_changepasswd, host_val + '.' + str(i) + '.' + str(j), port, username,
-                                     password,
-                                     new_password)
-                futures.append(future)
-
 
         for future in as_completed(futures):
             if mode == 0:
@@ -101,7 +71,33 @@ def ssh_changemorepasswd(host, port, username, password, new_password, thread):
                 flag = 1
                 final_string += '关闭成功'
                 return final_string
-    flag=1
+
+    if '/16' in host:
+        regex = re.compile(r'\.[0-9]{1,3}\.[0-9]{1,3}/\d{1,2}')
+        host_val = regex.sub('', host)
+        futures = []
+        for i in range(1, 256):
+            for j in range(1, 256):
+                future = pool.submit(ssh_changepasswd, host_val + '.' + str(i) + '.' + str(j), port, username,
+                                     password,
+                                     new_password)
+                futures.append(future)
+
+        for future in as_completed(futures):
+            if mode == 0:
+                try:
+                    result = future.result()  # 获取任务结果
+                    final_string += result
+                    print(result)
+                except Exception as e:
+                    final_string += f"An error occurred: {e}"
+                    print(f"An error occurred: {e}")
+            else:
+                mode = 0
+                flag = 1
+                final_string += '关闭成功'
+                return final_string
+    flag = 1
     return final_string
 
 

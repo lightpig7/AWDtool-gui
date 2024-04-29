@@ -3,80 +3,45 @@
 import {chage_passwd} from "@/tool.js";
 import {ref} from "vue";
 import emitter from "@/eventBus.js";
+import axios from 'axios';
 
-const username = ref('');
-const password = ref('');
-const host = ref('');
-const port = ref(22);
-const new_password = ref('');
+const url = ref('');
+const method = ref('');
+const param = ref('');
+const header = ref('');
 const thread = ref(5);
 let dataout = ref('');
 const regex = /\.[0-9]{1,3}\/\d{1,2}$/;
-const workerQueue = [];
-const eventQueue = [];
 
-function startWorker(event) {
-  const worker = new Worker(new URL('../worker.js', import.meta.url));
-
-  // 监听 Web Worker 返回的消息
-  worker.onmessage = (e) => {
-
-    emitter.emit('dataout',e.data);
-    workerQueue.shift(); // 完成任务后移除队列中的该任务
-    worker.terminate(); // 关闭线程
-    processNextWorker(); // 处理下一个任务
-  };
-  worker.postMessage(event);
-  workerQueue.push(worker);
-}
-
-function processNextWorker() {
-  if (eventQueue.length > 0 && workerQueue.length < thread.value) {
-    const nextEvent = eventQueue.shift(); // 从队列中取出下一个任务
-    if (nextEvent) {
-      startWorker(nextEvent); // 启动新的 Web Worker
+async function getFlag(url) {
+  const response = await fetch(url,{
+    method: "post",
+    headers: {
+      "Content-Type": "application/json"
     }
   }
+  )
+  console.log(response)
+
 }
 function changemore(){
   const regex_val= /\.[0-9]{1,3}\.[0-9]{1,3}\/\d{1,2}$/
   if(host.value.includes('/24')) {
-    let host_val = host.value.replace(regex, '');
-    for (let i = 1; i <= 255; i++) {
-      const event = {
-        host: host_val + '.' + i,
-        port: port.value,
-        username: username.value,
-        password: password.value,
-        new_password: new_password.value
-      };
-      eventQueue.push(event);
-      processNextWorker();
+
     }
-  }
+
   if(host.value.includes('/16')) {
-    let host_val = host.value.replace(regex_val, '');
-    for (let i = 1; i <= 255; i++) {
-      for (let j = 1; j <= 255; j++) {
-        const event = {
-          host: host_val + '.' + i+'.'+j,
-          port: port.value,
-          username: username.value,
-          password: password.value,
-          new_password: new_password.value
-        };
-        eventQueue.push(event);
-        processNextWorker();
-      }
+
     }
-  }
+
 }
 const confirm_ssh = async () => {
-  if (regex.test(host.value)) {
+  if (regex.test(url.value)) {
     changemore();
   } else {
-    dataout.value = await chage_passwd(host.value, port.value, username.value, password.value, new_password.value);
-    console.log(dataout.value)
+    dataout.value = await getFlag('http://'+url.value+'/');
+    console.log(url.value)
+    console.log(dataout.value);
     emitter.emit('dataout',dataout.value);
   }
 }
@@ -92,15 +57,15 @@ const confirm_ssh = async () => {
         <div class="item-mini">
           <div>
             <label>Url : </label>
-            <input v-model="host" style="width: 220px" placeholder="192.168.52.143或192.168.52.0/24">
+            <input v-model="url" style="width: 220px" placeholder="192.168.52.143或192.168.52.0/24">
           </div>
           <div>
             <label>方法 : </label>
-            <input v-model="port" style="width: 50px" placeholder="22">
+            <input v-model="method" style="width: 50px" placeholder="22">
           </div>
           <div>
             <label>参数 : </label>
-            <input v-model="thread" style="width: 50px" placeholder="5">
+            <input v-model="param" style="width: 50px" placeholder="5">
           </div>
           <div>
             <label>线程 : </label>
@@ -108,7 +73,7 @@ const confirm_ssh = async () => {
           </div>
           <div>
             <label>HTTP Header : </label>
-            <input v-model="thread"  placeholder="5">
+            <input v-model="header"  placeholder="5">
           </div>
         </div>
         <hr>
