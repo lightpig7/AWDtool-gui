@@ -1,11 +1,28 @@
-import {chage_passwd} from "@/tool.js";
-
-
-self.onmessage = async function  (event) { //监听主线程发过来的消息
-    // const { chage_passwd } = await import('@/tool.js');
-    // const { chage_passwd } = await import('./tool.js')
-    const { host, port, username, password, new_password } = event.data;
-    let strr = await chage_passwd(host, port, username, password,new_password)
-    console.log(host, port, username, password, new_password);
-    self.postMessage(strr); // 将信息发送到主线程上
+function fetchApi(url) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(xhr.responseText);
+            } else {
+                reject(new Error(`Request failed with status ${xhr.status}`));
+            }
+        };
+        xhr.onerror = () => {
+            reject(new Error('Request failed'));
+        };
+        xhr.send();
+    });
 }
+
+self.onmessage = async function(event) {
+    const {url, method, param, header} =event.data
+    console.log(url, method, param, header)
+    try {
+        const responseText = await fetchApi(`/api?url=${url}&method=${method}&param=${param}&header=${header}`);
+        self.postMessage(responseText); // 将信息发送到主线程上
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+};

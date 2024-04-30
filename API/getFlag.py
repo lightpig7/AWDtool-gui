@@ -13,16 +13,20 @@ headers = {
 }
 
 
-def check_web_service(host):
-    url = f"http://{host}/"
+def check_web_service(url,param,method,header):
+    if param != '':
+        url_val= url+'?'+param
+    else:
+        url_val = url
     try:
-        response = requests.get(url, headers=headers)
+        print(url_val)
+        response = requests.get(url_val,headers=headers)
         if response.status_code == 200:
-            return regex_flag(response.text)
+            return url+' '+regex_flag(response.text)
         else:
-            print(f"{host} false: No web service found")
+            return f"{url} false: No web service found"
     except requests.RequestException as e:
-        print(f"{host} false: {str(e)}")
+        return f"{url} false: {str(e)}"
 
 
 def check_web_moreservice(host, thread):
@@ -104,7 +108,7 @@ def kill_get():
 
 
 if __name__ == "__main__":
-    strr = '127.0.0.1:81/a.php'
-    print(check_web_service(strr))
-    # target_ip = "www.baidu.com"
+    strr = 'http://localhost:5173/'
+    print(check_web_service(strr,'1','1','1'))
+    # target_ip = "www.baidu.com"1
     # check_web_service(target_ip)
