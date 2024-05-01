@@ -14,13 +14,29 @@ headers = {
 
 
 def check_web_service(url,param,method,header):
-    if param != '':
-        url_val= url+'?'+param
-    else:
-        url_val = url
     try:
-        print(url_val)
-        response = requests.get(url_val,headers=headers)
+        if method == 'GET':
+            if param != '':
+                url_val = url + '?' + param
+            else:
+                url_val = url
+            response = requests.get(url_val ,headers=headers)
+        elif method == 'POST':
+            if '=' in param:
+                param_val = {}
+                for item in param.split('&'):
+                    print(item)
+                    param_val[item.split('=')[0]] = item.split('=')[1]
+                print(param_val)
+                response = requests.post(url,data=param_val,headers=headers)
+            else:
+                response = requests.post(url, data=param, headers=headers)
+        else:
+            if param != '':
+                url_val = url + '?' + param
+            else:
+                url_val = url
+            response = requests.get(url_val, headers=headers)
         if response.status_code == 200:
             return url+' '+regex_flag(response.text)
         else:
@@ -29,64 +45,64 @@ def check_web_service(url,param,method,header):
         return f"{url} false: {str(e)}"
 
 
-def check_web_moreservice(host, thread):
-    global mode, flag
-    if flag == 0:
-        kill_get()
-    else:
-        flag = 0
-
-    final_string = ''
-    pool = ThreadPoolExecutor(max_workers=int(thread))
-
-    if '/24' in host:
-        regex = re.compile(r'\.[0-9]{1,3}/\d{1,2}')
-        host_val = regex.sub('', host)
-        futures = []
-        for i in range(1, 256):
-            future = pool.submit(check_web_service, host_val + '.' + str(i))
-            futures.append(future)
-
-        for future in as_completed(futures):
-            if mode == 0:
-                try:
-                    result = future.result()  # 获取任务结果
-                    final_string += result
-                    print(result)
-                except Exception as e:
-                    final_string += f"An error occurred: {e}"
-                    print(f"An error occurred: {e}")
-            else:
-                mode = 0
-                flag = 1
-                final_string += '关闭成功'
-                return final_string
-
-    if '/16' in host:
-        regex = re.compile(r'\.[0-9]{1,3}\.[0-9]{1,3}/\d{1,2}')
-        host_val = regex.sub('', host)
-        futures = []
-        for i in range(1, 256):
-            for j in range(1, 256):
-                future = pool.submit(check_web_service, host_val + '.' + str(i))
-                futures.append(future)
-
-        for future in as_completed(futures):
-            if mode == 0:
-                try:
-                    result = future.result()  # 获取任务结果
-                    final_string += result
-                    print(result)
-                except Exception as e:
-                    final_string += f"An error occurred: {e}"
-                    print(f"An error occurred: {e}")
-            else:
-                mode = 0
-                flag = 1
-                final_string += '关闭成功'
-                return final_string
-    flag = 1
-    return final_string
+# def check_web_moreservice(host, thread):
+#     global mode, flag
+#     if flag == 0:
+#         kill_get()
+#     else:
+#         flag = 0
+#
+#     final_string = ''
+#     pool = ThreadPoolExecutor(max_workers=int(thread))
+#
+#     if '/24' in host:
+#         regex = re.compile(r'\.[0-9]{1,3}/\d{1,2}')
+#         host_val = regex.sub('', host)
+#         futures = []
+#         for i in range(1, 256):
+#             future = pool.submit(check_web_service, host_val + '.' + str(i))
+#             futures.append(future)
+#
+#         for future in as_completed(futures):
+#             if mode == 0:
+#                 try:
+#                     result = future.result()  # 获取任务结果
+#                     final_string += result
+#                     print(result)
+#                 except Exception as e:
+#                     final_string += f"An error occurred: {e}"
+#                     print(f"An error occurred: {e}")
+#             else:
+#                 mode = 0
+#                 flag = 1
+#                 final_string += '关闭成功'
+#                 return final_string
+#
+#     if '/16' in host:
+#         regex = re.compile(r'\.[0-9]{1,3}\.[0-9]{1,3}/\d{1,2}')
+#         host_val = regex.sub('', host)
+#         futures = []
+#         for i in range(1, 256):
+#             for j in range(1, 256):
+#                 future = pool.submit(check_web_service, host_val + '.' + str(i))
+#                 futures.append(future)
+#
+#         for future in as_completed(futures):
+#             if mode == 0:
+#                 try:
+#                     result = future.result()  # 获取任务结果
+#                     final_string += result
+#                     print(result)
+#                 except Exception as e:
+#                     final_string += f"An error occurred: {e}"
+#                     print(f"An error occurred: {e}")
+#             else:
+#                 mode = 0
+#                 flag = 1
+#                 final_string += '关闭成功'
+#                 return final_string
+#     flag = 1
+#     return final_string
 
 
 def regex_flag(strr):
@@ -108,7 +124,7 @@ def kill_get():
 
 
 if __name__ == "__main__":
-    strr = 'http://localhost:5173/'
-    print(check_web_service(strr,'1','1','1'))
+    strr = 'http://127.0.0.1:12345/'
+    print(check_web_service(strr,'212312dasdads','POST','1'))
     # target_ip = "www.baidu.com"1
     # check_web_service(target_ip)
