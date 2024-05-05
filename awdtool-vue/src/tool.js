@@ -13,7 +13,7 @@ export const change_morepasswd = async function (host, port, username, password,
     //
 }
 export const get_flag = async function (){
-    axios.get('/api')
+    axios.get('/api','')
         .then(response => {
             // 处理返回的数据
             console.log(response.data);

@@ -2,6 +2,7 @@
 // import {fetchApi} from "@/worker.js";
 import {ref} from "vue";
 import emitter from "@/eventBus.js";
+import axios from "axios";
 
 const url = ref('');
 const method = ref('GET');
@@ -12,13 +13,16 @@ const path = ref('/');
 const port = ref('80');
 let dataout = ref('');
 const regex = /\.[0-9]{1,3}\/\d{1,2}$/;
-const workerQueue = [];
-const eventQueue = []
+let workerQueue = [];
+let eventQueue = []
 let pause=0;
+let final_result='';
 
 function startWorker(event) {
   if(pause ===1)
   {
+    workerQueue=[];
+    eventQueue=[]
     console.log(pause);
     return
   }
@@ -29,15 +33,25 @@ function startWorker(event) {
   }
   worker.onmessage = (e) => {
     emitter.emit('dataout', e.data);
+    final_result+=e.data+'\n';
     workerQueue.shift();
+    console.log(final_result);
+    if(workerQueue.length===0&&eventQueue.length===0){
+      axios.post('/down_file', {strr:final_result,file_name:'flags.txt'}).then(response => {
+        console.log(response);
+      })
+    }
     worker.terminate();
     processNextWorker();
   };
+
 }
 
 function processNextWorker() {
   if(pause ===1)
   {
+    workerQueue=[];
+    eventQueue=[]
     console.log(pause);
     return
   }
@@ -47,6 +61,7 @@ function processNextWorker() {
       startWorker(nextEvent); // 启动新的 Web Worker
     }
   }
+
 }
 
 function get_moreflag(url, method, param, header) {
@@ -87,8 +102,8 @@ const confirm_ssh = async (mode) => {
   if(mode === '0') {
     pause=0;
   if (regex.test(url.value)) {
-
-    get_moreflag(url, method, param, header)
+    final_result='';
+    get_moreflag(url, method, param, header);
 
   } else {
     const event = {

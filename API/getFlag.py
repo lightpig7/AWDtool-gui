@@ -44,6 +44,27 @@ def check_web_service(url,param,method,header):
     except requests.RequestException as e:
         return f"{url} false: {str(e)}"
 
+def regex_flag(strr):
+    s = ''
+    regex = re.compile(r'flag\{.*?\}')
+    match = re.findall(regex, strr)  # 使用 re.search 查找整个字符串中的匹配项
+    if match:
+        for i in match:
+            s += i + ';'
+        return s.strip(';')
+    else:
+        print('false')
+        return 'no found flag'
+
+
+def kill_get():
+    global mode
+    mode = 1
+
+
+if __name__ == "__main__":
+    strr = 'http://127.0.0.1:12345/'
+    print(check_web_service(strr,'212312dasdads','POST','1'))
 
 # def check_web_moreservice(host, thread):
 #     global mode, flag
@@ -103,28 +124,3 @@ def check_web_service(url,param,method,header):
 #                 return final_string
 #     flag = 1
 #     return final_string
-
-
-def regex_flag(strr):
-    s = ''
-    regex = re.compile(r'flag\{.*?\}')
-    match = re.findall(regex, strr)  # 使用 re.search 查找整个字符串中的匹配项
-    if match:
-        for i in match:
-            s += i + ';'
-        return s.strip(';')
-    else:
-        print('false')
-        return 'no found flag'
-
-
-def kill_get():
-    global mode
-    mode = 1
-
-
-if __name__ == "__main__":
-    strr = 'http://127.0.0.1:12345/'
-    print(check_web_service(strr,'212312dasdads','POST','1'))
-    # target_ip = "www.baidu.com"1
-    # check_web_service(target_ip)
